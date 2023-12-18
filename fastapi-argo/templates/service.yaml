@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fastapi-argo.fullname" . }}
+  labels:
+    {{- include "fastapi-argo.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "fastapi-argo.selectorLabels" . | nindent 4 }}
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+      protocol: TCP
+      name: http

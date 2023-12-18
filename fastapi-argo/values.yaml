@@ -1,0 +1,29 @@
+replicaCount: 1
+
+image:
+  repository: haulrest/fastapi-sample
+  pullPolicy: IfNotPresent
+  tag: "v1"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "dive-argo-sample"
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - paths:
+        - path: /
+          pathType: Prefix
+
+nodeSelector:
+  kubernetes.io/hostname: k3s-worker-1
+
+selectorLabels: {}

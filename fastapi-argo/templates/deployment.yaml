@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fastapi-argo.fullname" . }}
+  labels:
+    {{- include "fastapi-argo.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "fastapi-argo.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "fastapi-argo.labels" . | nindent 8 }}
+    spec:
+      securityContext:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /docs
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /docs
+              port: http
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
